@@ -1,0 +1,46 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - v*.*.*
+
+jobs:
+  release:
+    runs-on: macos-15
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Xcode
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: '16.1'
+      - name: Build executable for release
+        run: swift build -c release --arch arm64 --arch x86_64 --product swift-pd-guess
+      - name: Compress archive
+        run: tar -czf swift-pd-guess-${{ github.ref_name }}.tar.gz -C .build/apple/Products/Release swift-pd-guess
+      - name: Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: swift-pd-guess-${{ github.ref_name }}.tar.gz
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Compute Checksum
+        id: checksum
+        run: |
+          echo "md5=$(md5 -q ./swift-pd-guess-${{ github.ref_name }}.tar.gz)" >> $GITHUB_OUTPUT
+          echo "xcode_path=$(xcrun xcode-select --print-path)" >> $GITHUB_OUTPUT
+      - name: Create Release
+        id: create_release
+        uses: ncipollo/release-action@v1
+        with:
+          body: |
+            Build Xcode version ${{ steps.checksum.outputs.xcode_path }}
+            | Name                                         | MD5                                        |
+            |----------------------------------------------|--------------------------------------------|
+            | swift-pd-guess-${{ github.ref_name }}.tar.gz | ${{ steps.checksum.outputs.md5 }}          |
+          allowUpdates: true
+          artifacts: swift-pd-guess-${{ github.ref_name }}.tar.gz
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+
