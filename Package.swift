@@ -6,6 +6,9 @@ import PackageDescription
 let package = Package(
     name: "swift-pd-guess",
     platforms: [.macOS(.v15)],
+    products: [
+        .executable(name: "swift-pd-guess", targets: ["swift-pd-guess"]),
+    ],
     dependencies: [
         .package(url: "https://github.com/apple/swift-argument-parser", from: "1.2.0"),
         .package(url: "https://github.com/apple/swift-algorithms", from: "1.2.0"),
@@ -16,17 +19,11 @@ let package = Package(
             dependencies: [
                 .product(name: "ArgumentParser", package: "swift-argument-parser"),
                 .product(name: "Algorithms", package: "swift-algorithms"),
-            ],
-            swiftSettings: [
-                .swiftLanguageMode(.v5),
             ]
         ),
         .testTarget(
             name: "swift-pd-guess-tests",
-            dependencies: ["swift-pd-guess"],
-            swiftSettings: [
-                .swiftLanguageMode(.v5),
-            ]
+            dependencies: ["swift-pd-guess"]
         ),
     ]
 )

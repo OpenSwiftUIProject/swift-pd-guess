@@ -12,7 +12,7 @@ import CryptoKit
 
 @main
 struct PDGuess: AsyncParsableCommand {
-    static var configuration: CommandConfiguration = CommandConfiguration(commandName: "swift-pd-guess")
+    static let configuration: CommandConfiguration = CommandConfiguration(commandName: "swift-pd-guess")
     
     @Argument(help: "MD5 hash value (private-discriminator) to search for")
     var hash: String
